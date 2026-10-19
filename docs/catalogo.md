@@ -19,7 +19,7 @@ flowchart TD
 |---|---|---|---|
 | `file` | `/app/entities/users.yaml` | Entidades de imagen (user, group) | `catalog.locations` en `override.yaml` |
 | `url` (raw) | `https://raw.githubusercontent.com/…/catalog-info.yaml` | Componentes de repos | `catalog:register` en los templates |
-| `url` (blob) | `https://github.com/…/catalog-info.yaml` | Entidades de `backstage-workloads` | `catalog:register` (k8s-manifests) |
+| `url` (blob) | `https://github.com/…/catalog-info.yaml` | Entidades de `idp-backstage-catalog` | `catalog:register` (k8s-manifests) |
 | `bootstrap` | interna | Arranque inicial de los `file:` | interna |
 
 > **Diferencia raw vs blob**: el refresh processor usa `raw` como URL estable
@@ -32,7 +32,8 @@ flowchart TD
 - Los templates (python, go) declaran `owner: group:default/development` y
   `grupo` con default `development`.
 - La entidad `group:default/development` (y `user:default/guslopezc`) viven en
-  `backstage-entities` y se cargan desde el archivo de imagen
+  el repo [`idp-backstage-app`](https://github.com/gusLopezC-DevOps/idp-backstage-app)
+  (`catalog/entities/`) y se cargan desde el archivo de imagen
   `/app/entities/groups.yaml` / `/app/entities/users.yaml`.
 - **Si una entidad dice `owner: group:default/<g>` y ese grupo no existe**:
   la UI muestra la advertencia *"Entities not found are: group:default/<g>"*

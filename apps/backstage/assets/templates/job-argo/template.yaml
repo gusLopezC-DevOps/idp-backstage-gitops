@@ -12,7 +12,7 @@ metadata:
     - docker
     - argocd
   annotations:
-    github.com/project-slug: gusLopezC-DevOps/backstage-entities
+    github.com/project-slug: gusLopezC-DevOps/idp-backstage-gitops
 spec:
   owner: development
   type: service
@@ -65,7 +65,7 @@ spec:
       name: Registrar workload en el plano de control (PR)
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=gusLopezC-DevOps&repo=control-plane
+        repoUrl: github.com?owner=gusLopezC-DevOps&repo=platform-control-plane
         workflowId: workflow-alta-pr.yml
         branchOrTagName: main
         workflowInputs:
@@ -83,7 +83,7 @@ spec:
       - title: Repositorio
         url: ${{ steps.publish.output.remoteUrl }}
       - title: PR en el plano de control
-        url: https://github.com/gusLopezC-DevOps/control-plane/pulls
+        url: https://github.com/gusLopezC-DevOps/platform-control-plane/pulls
       - title: ArgoCD
         url: https://argocd.local/applications/${{ parameters.repoName }}
       - title: Catalogo Backstage

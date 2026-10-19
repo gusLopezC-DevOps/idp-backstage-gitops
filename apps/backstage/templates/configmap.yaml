@@ -88,24 +88,24 @@ data:
           rules:
             - allow: [Template]
     
-        # MLOps templates (source of truth: control-plane repo)
+        # MLOps templates (source of truth: platform-control-plane repo)
         - type: url
-          target: https://github.com/gusLopezC-DevOps/control-plane/blob/main/backstage-templates/cognitive-safe-llm-service/template.yaml
+          target: https://github.com/gusLopezC-DevOps/platform-control-plane/blob/main/backstage-templates/cognitive-safe-llm-service/template.yaml
           rules:
             - allow: [Template]
     
         - type: url
-          target: https://github.com/gusLopezC-DevOps/control-plane/blob/main/backstage-templates/llm-canary-eval-pipeline/template.yaml
+          target: https://github.com/gusLopezC-DevOps/platform-control-plane/blob/main/backstage-templates/llm-canary-eval-pipeline/template.yaml
           rules:
             - allow: [Template]
     
         - type: url
-          target: https://github.com/gusLopezC-DevOps/control-plane/blob/main/backstage-templates/finops-arbitrage-router/template.yaml
+          target: https://github.com/gusLopezC-DevOps/platform-control-plane/blob/main/backstage-templates/finops-arbitrage-router/template.yaml
           rules:
             - allow: [Template]
     
         - type: url
-          target: https://github.com/gusLopezC-DevOps/control-plane/blob/main/backstage-templates/managed-llm-service/template.yaml
+          target: https://github.com/gusLopezC-DevOps/platform-control-plane/blob/main/backstage-templates/managed-llm-service/template.yaml
           rules:
             - allow: [Template]
     
@@ -581,7 +581,7 @@ data:
         - docker
         - argocd
       annotations:
-        github.com/project-slug: gusLopezC-DevOps/backstage-entities
+        github.com/project-slug: gusLopezC-DevOps/idp-backstage-gitops
     spec:
       owner: development
       type: service
@@ -628,7 +628,7 @@ data:
           name: Registrar workload en el plano de control (PR)
           action: github:actions:dispatch
           input:
-            repoUrl: github.com?owner=gusLopezC-DevOps&repo=control-plane
+            repoUrl: github.com?owner=gusLopezC-DevOps&repo=platform-control-plane
             workflowId: workflow-alta-pr.yml
             branchOrTagName: main
             workflowInputs:
@@ -646,7 +646,7 @@ data:
           - title: Repositorio
             url: ${{ steps.publish.output.remoteUrl }}
           - title: PR en el plano de control
-            url: https://github.com/gusLopezC-DevOps/control-plane/pulls
+            url: https://github.com/gusLopezC-DevOps/platform-control-plane/pulls
           - title: ArgoCD
             url: https://argocd.local/applications/${{ parameters.repoName }}
           - title: Catalogo Backstage
@@ -946,7 +946,7 @@ data:
         - docker
         - argocd
       annotations:
-        github.com/project-slug: gusLopezC-DevOps/backstage-entities
+        github.com/project-slug: gusLopezC-DevOps/idp-backstage-gitops
     spec:
       owner: development
       type: service
@@ -993,7 +993,7 @@ data:
           name: Registrar workload en el plano de control (PR)
           action: github:actions:dispatch
           input:
-            repoUrl: github.com?owner=gusLopezC-DevOps&repo=control-plane
+            repoUrl: github.com?owner=gusLopezC-DevOps&repo=platform-control-plane
             workflowId: workflow-alta-pr.yml
             branchOrTagName: main
             workflowInputs:
@@ -1011,7 +1011,7 @@ data:
           - title: Repositorio
             url: ${{ steps.publish.output.remoteUrl }}
           - title: PR en el plano de control
-            url: https://github.com/gusLopezC-DevOps/control-plane/pulls
+            url: https://github.com/gusLopezC-DevOps/platform-control-plane/pulls
           - title: ArgoCD
             url: https://argocd.local/applications/${{ parameters.repoName }}
           - title: Catalogo Backstage
@@ -1203,7 +1203,7 @@ data:
         - docker
         - argocd
       annotations:
-        github.com/project-slug: gusLopezC-DevOps/backstage-entities
+        github.com/project-slug: gusLopezC-DevOps/idp-backstage-gitops
     spec:
       owner: development
       type: service
@@ -1256,7 +1256,7 @@ data:
           name: Registrar workload en el plano de control (PR)
           action: github:actions:dispatch
           input:
-            repoUrl: github.com?owner=gusLopezC-DevOps&repo=control-plane
+            repoUrl: github.com?owner=gusLopezC-DevOps&repo=platform-control-plane
             workflowId: workflow-alta-pr.yml
             branchOrTagName: main
             workflowInputs:
@@ -1274,7 +1274,7 @@ data:
           - title: Repositorio
             url: ${{ steps.publish.output.remoteUrl }}
           - title: PR en el plano de control
-            url: https://github.com/gusLopezC-DevOps/control-plane/pulls
+            url: https://github.com/gusLopezC-DevOps/platform-control-plane/pulls
           - title: ArgoCD
             url: https://argocd.local/applications/${{ parameters.repoName }}
           - title: Catalogo Backstage
@@ -1334,7 +1334,7 @@ data:
         - kong
         - golden-path
       annotations:
-        github.com/project-slug: gusLopezC-DevOps/backstage-entities
+        github.com/project-slug: gusLopezC-DevOps/idp-backstage-gitops
     spec:
       owner: development
       type: service
@@ -1368,7 +1368,7 @@ data:
           name: Push to Workloads Repo
           action: gitops:push-to-repo
           input:
-            repoUrl: github.com?owner=gusLopezC-DevOps&repo=backstage-workloads
+            repoUrl: github.com?owner=gusLopezC-DevOps&repo=idp-backstage-catalog
             branch: main
             gitCommitMessage: "Add LocalDeployment claim for ${{ parameters.appName }}"
             subPath: apps/workloads/${{ parameters.appName }}
@@ -1380,7 +1380,7 @@ data:
           name: Register Component in Catalog
           action: catalog:register
           input:
-            repoContentsUrl: https://github.com/gusLopezC-DevOps/backstage-workloads/blob/main
+            repoContentsUrl: https://github.com/gusLopezC-DevOps/idp-backstage-catalog/blob/main
             catalogInfoPath: /apps/workloads/${{ parameters.appName }}/catalog-info.yaml
       output:
         links:
@@ -1661,7 +1661,7 @@ data:
         - docker
         - argocd
       annotations:
-        github.com/project-slug: gusLopezC-DevOps/backstage-entities
+        github.com/project-slug: gusLopezC-DevOps/idp-backstage-gitops
     spec:
       owner: development
       type: service
@@ -1708,7 +1708,7 @@ data:
           name: Registrar workload en el plano de control (PR)
           action: github:actions:dispatch
           input:
-            repoUrl: github.com?owner=gusLopezC-DevOps&repo=control-plane
+            repoUrl: github.com?owner=gusLopezC-DevOps&repo=platform-control-plane
             workflowId: workflow-alta-pr.yml
             branchOrTagName: main
             workflowInputs:
@@ -1726,7 +1726,7 @@ data:
           - title: Repositorio
             url: ${{ steps.publish.output.remoteUrl }}
           - title: PR en el plano de control
-            url: https://github.com/gusLopezC-DevOps/control-plane/pulls
+            url: https://github.com/gusLopezC-DevOps/platform-control-plane/pulls
           - title: ArgoCD
             url: https://argocd.local/applications/${{ parameters.repoName }}
           - title: Catalogo Backstage
@@ -1968,7 +1968,7 @@ data:
         - docker
         - argocd
       annotations:
-        github.com/project-slug: gusLopezC-DevOps/backstage-entities
+        github.com/project-slug: gusLopezC-DevOps/idp-backstage-gitops
     spec:
       owner: development
       type: service
@@ -2023,7 +2023,7 @@ data:
           name: Registrar workload en el plano de control (PR)
           action: github:actions:dispatch
           input:
-            repoUrl: github.com?owner=gusLopezC-DevOps&repo=control-plane
+            repoUrl: github.com?owner=gusLopezC-DevOps&repo=platform-control-plane
             workflowId: workflow-alta-pr.yml
             branchOrTagName: main
             workflowInputs:
@@ -2041,7 +2041,7 @@ data:
           - title: Repositorio
             url: ${{ steps.publish.output.remoteUrl }}
           - title: PR en el plano de control
-            url: https://github.com/gusLopezC-DevOps/control-plane/pulls
+            url: https://github.com/gusLopezC-DevOps/platform-control-plane/pulls
           - title: ArgoCD
             url: https://argocd.local/applications/${{ parameters.repoName }}
           - title: Catalogo Backstage

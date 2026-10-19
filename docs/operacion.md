@@ -21,7 +21,7 @@ kubectl -n workloads exec deploy/backstage -- cat /app/config/override.yaml
 |---|---|
 | Sincronizar Argo | API/UI de `argocd.local` → app → Sync (o force-sync de `backstage-gitops`/`root-app`) |
 | Cambiar un template/override/plugin | `gen_cm.py` → push → sync. El checksum inyectado en el Deployment dispara el rollout solo (Argo CD): **no** hace falta `rollout restart` |
-| Publicar nueva imagen de Backstage | push a `backstage-app` (CI build+push Docker Hub) → bump tag en `apps/backstage/deployment.yaml` → sync → rollout |
+| Publicar nueva imagen de Backstage | push a `idp-backstage-app` (CI build+push Docker Hub) → bump tag en `apps/backstage/deployment.yaml` → sync → rollout |
 | Reiniciar Backstage (solo emergencia: BD volcada, plugin colgado) | `kubectl -n workloads rollout restart deploy/backstage` |
 | Ver logs | `kubectl -n workloads logs deploy/backstage --tail=300 -f` |
 | DNS clientes | `/etc/hosts`: `192.168.100.77 <host>.local` |
@@ -136,7 +136,7 @@ kubectl -n workloads exec deploy/backstage -- cat /app/config/override.yaml
 
 ## Valores de referencia
 
-| Imagen Backstage | `docker.io/guslopezc/backstage:v21` — repo `gusLopezC-DevOps/backstage-app`, CI `build-push` (tags por SHA + `latest` + versiones tipo `v21`) |
+| Imagen Backstage | `docker.io/guslopezc/backstage:v21` — repo `gusLopezC-DevOps/idp-backstage-app`, CI `build-push` (tags por SHA + `latest` + versiones tipo `v21`) |
 - Bindings: pod `7007`, service ClusterIP `7007`, ingress Kong `backstage.local`.
 - BD: StatefulSet `postgres` en `workloads`.
 - CM: `backstage-templates` (generado por `gen_cm.py`).

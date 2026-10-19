@@ -22,7 +22,7 @@ PostgreSQL y políticas de red.
 ```mermaid
 flowchart LR
     subgraph GitHub[GitHub]
-        R[backstage-gitops repo<br/>manifiestos + assets]
+        R[idp-backstage-gitops repo<br/>manifiestos + assets]
     end
     subgraph ArgoCD[ArgoCD]
         APP[app backstage-gitops<br/>namespace workloads]
@@ -120,8 +120,8 @@ Cambios en un template/override → regenerar CM → PR/push → Argo sync → `
 
 ---
 
-> **Repos relacionados**: [`control-plane`](https://github.com/gusLopezC-DevOps/control-plane)
+> **Repos relacionados**: [`platform-control-plane`](https://github.com/gusLopezC-DevOps/platform-control-plane)
 > (App-of-Apps + gancho de alta de workloads),
-> [`backstage-workloads`](https://github.com/gusLopezC-DevOps/backstage-workloads)
+> [`idp-backstage-catalog`](https://github.com/gusLopezC-DevOps/idp-backstage-catalog)
 > (entidades estáticas de catálogo),
 > workload de ejemplo: `go-frontend-test`.

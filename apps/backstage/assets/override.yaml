@@ -81,24 +81,24 @@ catalog:
       rules:
         - allow: [Template]
 
-    # MLOps templates (source of truth: control-plane repo)
+    # MLOps templates (source of truth: platform-control-plane repo)
     - type: url
-      target: https://github.com/gusLopezC-DevOps/control-plane/blob/main/backstage-templates/cognitive-safe-llm-service/template.yaml
+      target: https://github.com/gusLopezC-DevOps/platform-control-plane/blob/main/backstage-templates/cognitive-safe-llm-service/template.yaml
       rules:
         - allow: [Template]
 
     - type: url
-      target: https://github.com/gusLopezC-DevOps/control-plane/blob/main/backstage-templates/llm-canary-eval-pipeline/template.yaml
+      target: https://github.com/gusLopezC-DevOps/platform-control-plane/blob/main/backstage-templates/llm-canary-eval-pipeline/template.yaml
       rules:
         - allow: [Template]
 
     - type: url
-      target: https://github.com/gusLopezC-DevOps/control-plane/blob/main/backstage-templates/finops-arbitrage-router/template.yaml
+      target: https://github.com/gusLopezC-DevOps/platform-control-plane/blob/main/backstage-templates/finops-arbitrage-router/template.yaml
       rules:
         - allow: [Template]
 
     - type: url
-      target: https://github.com/gusLopezC-DevOps/control-plane/blob/main/backstage-templates/managed-llm-service/template.yaml
+      target: https://github.com/gusLopezC-DevOps/platform-control-plane/blob/main/backstage-templates/managed-llm-service/template.yaml
       rules:
         - allow: [Template]
 

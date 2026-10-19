@@ -22,7 +22,7 @@ flowchart TD
     B --> C[fetch:template<br/>renderiza skeleton en ./workload]
     C --> D[publish:github<br/>crea repo público + push initial]
     D --> E[CI del workload:<br/>go vet / build + docker push]
-    E --> F[dispatch workflow-alta-pr<br/>en repo control-plane]
+    E --> F[dispatch workflow-alta-pr<br/>en repo platform-control-plane]
     F --> G[workflow corre alta-workload.py<br/>genera AppProject + Application]
     G --> H[PR 'Alta workload <nombre>']
     H --> I{¿se mergea?}
@@ -43,9 +43,9 @@ flowchart TD
 | **2. Scaffold** | Backstage scaffolder | `fetch:template` | Renderiza `assets/templates/<t>/skeleton` → `./workload` con los valores del formulario. |
 | **3. Publicación** | GitHub API | `publish:github` | Crea repo **público** en `gusLopezC-DevOps`, rama `main`, commit inicial; `repoVisibility: public` porque los secretos de org no llegan a repos privados. |
 | **4. CI** | GitHub Actions (repo nuevo) | `ci.yml` | `go vet`/build, build+docker push `docker.io/guslopezc/<nombre>:${{ github.sha }}`, y **autocomitea el bump de imagen** en `deployment.yaml` (dispara el sync de Argo del workload). |
-| **5. Gancho de alta** | GitHub Actions (repo control-plane) | `workflow-alta-pr.yml` (dispatch) | Backstage dispara `github:actions:dispatch` con `nombre/repositorio/arquetipo/grupo`. El workflow ejecuta `scripts/alta-workload.py`. |
+| **5. Gancho de alta** | GitHub Actions (repo platform-control-plane) | `workflow-alta-pr.yml` (dispatch) | Backstage dispara `github:actions:dispatch` con `nombre/repositorio/arquetipo/grupo`. El workflow ejecuta `scripts/alta-workload.py`. |
 | **6. Generar manifests** | script `alta-workload.py` | Python | Renderiza `plantillas/app-project.yaml` + `plantillas/application.yaml` → `overlays/prod/{projects,apps}/<nombre>.yaml` y actualiza el `kustomization.yaml`. |
-| **7. PR** | control-plane | workflow | PR `Alta workload <nombre>` (body en una línea). CI valida coherencia (`validar-coherencia.py` + `render.sh`). |
+| **7. PR** | platform-control-plane | workflow | PR `Alta workload <nombre>` (body en una línea). CI valida coherencia (`validar-coherencia.py` + `render.sh`). |
 | **8. Merge + sync** | ArgoCD | `root-app` | Tras el merge, con `prune+selfHeal` (y un force-sync si se quiere acelerar) la app `root-app` aplica el nuevo Application + AppProject. |
 | **9. Despliegue** | Cluster k3s | Application del workload | 1 namespace + Deployment + Service + Ingress `ingressClassName: kong`; descartando `catalog-info.yaml` del scope de Argo (`directory.exclude`). |
 | **10. Ruteo** | Kong + DNS | Kong IngressClass + `/etc/hosts` | `<nombre>.local` → Kong → Service. Añadir en el `/etc/hosts` del cliente: `192.168.100.77 <nombre>.local`. |
@@ -66,7 +66,7 @@ flowchart LR
     PROBE --> OK[Healthy]
 ```
 
-El ciclo de actualización **no pasa por control-plane**: el repo del workload lleva
+El ciclo de actualización **no pasa por platform-control-plane**: el repo del workload lleva
 sus propios manifests, la Application de Argo lee ese repo (`path: .`, `recurse: true`,
 `exclude: catalog-info.yaml`) con `automated.prune+selfHeal`, así que cualquier bump de
 imagen se aplica solo.
@@ -82,7 +82,7 @@ imagen se aplica solo.
 
 ```mermaid
 flowchart TD
-    R[Decisión: el workload ya no se usa] --> CP[control-plane<br/>borrar apps/<n>.yaml + projects/<n>.yaml<br/>y salida del kustomization]
+    R[Decisión: el workload ya no se usa] --> CP[platform-control-plane<br/>borrar apps/<n>.yaml + projects/<n>.yaml<br/>y salida del kustomization]
     CP --> PUSH[git push main]
     PUSH --> SYNC[force-sync root-app<br/>prune elimina la Application]
     SYNC --> CASCADE[Application borra sus recursos<br/>namespace queda vacío]
@@ -96,7 +96,7 @@ flowchart TD
 Pasos reales ejecutados de baja (referencia `mi-api5`):
 
 1. Borrar el **repo GitHub** del workload (o marcarlo obsoleto).
-2. En `control-plane`: eliminar `overlays/prod/apps/<n>.yaml` y `projects/<n>.yaml`
+2. En `platform-control-plane`: eliminar `overlays/prod/apps/<n>.yaml` y `projects/<n>.yaml`
    + referencias en `kustomization.yaml`; commit + push.
 3. `force-sync` de `root-app` (prune) → se elimina la Application y sus recursos.
 4. Borrar el namespace vacío y la línea de `/etc/hosts`.
@@ -108,10 +108,10 @@ Pasos reales ejecutados de baja (referencia `mi-api5`):
 
 | Etapa | Repo |
 |---|---|
-| Templates + portal | `backstage-gitops` (`assets/templates/*`) |
-| Gancho de alta / App-of-Apps | `control-plane` |
+| Templates + portal | `idp-backstage-gitops` (`assets/templates/*`) |
+| Gancho de alta / App-of-Apps | `platform-control-plane` |
 | Manifests + CI del workload | repo del workload (ej. `go-frontend-test`) |
-| Entidades estáticas | `backstage-workloads` |
+| Entidades estáticas | `idp-backstage-catalog` |
 | Catálogo | BD PostgreSQL de Backstage |
 
 ## Datos de referencia (cluster)

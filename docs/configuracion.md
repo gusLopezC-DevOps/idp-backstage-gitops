@@ -17,7 +17,7 @@ flowchart LR
 | Bloque | Propósito |
 |---|---|
 | `integrations.github` | Token `${GITHUB_TOKEN}` → repos privados + raw GitHub |
-| `catalog.locations` | Entidades locales (`/app/entities/{users,groups}.yaml`), los 6 templates locales (`file:`) y 4 templates MLOps por `url:` (control-plane) |
+| `catalog.locations` | Entidades locales (`/app/entities/{users,groups}.yaml`), los 6 templates locales (`file:`) y 4 templates MLOps por `url:` (platform-control-plane) |
 | `kubernetes.customResources` | Modelos extra del plugin Kubernetes (`policyreports` kyverno, `localdeployments` crossplane) |
 | `kyverno.enablePermissions` | `false` (no exponer permisos hacia afuera) |
 | `kubernetesResources.enablePermissions` | `true` + `annotationPrefix: terasky.backstage.io` + concurrency |
@@ -26,7 +26,7 @@ flowchart LR
 > antiguas) — se quitó esa location al limpiar el catálogo (ver `catalogo.md`).
 >
 > **Nota 2**: la imagen tampoco hornea `catalog/templates` (se eliminaron de
-> `backstage-app`); las plantillas del scaffolder las sirve **solo** el CM vía
+> `idp-backstage-app`); las plantillas del scaffolder las sirve **solo** el CM vía
 > `templates/*` → `/app/templates`. El `override.yaml` referencia esas rutas
 > (`file:/app/templates/<tpl>/template.yaml`).
 
@@ -53,7 +53,7 @@ Consecuencias en la práctica:
 | `POSTGRES_USER` / `POSTGRES_PASSWORD` | `postgres-sealed` | conexión a BD |
 | `POSTGRES_HOST` | lit. `postgres.workloads.svc.cluster.local` | arranque |
 
-Estrategia de secretos: **SealedSecrets** (ver `control-plane/docs/gestion-secretos-lite.md`);
+Estrategia de secretos: **SealedSecrets** (ver `platform-control-plane/docs/gestion-secretos-lite.md`);
 nunca en claro en Git.
 
 ## Mapa del CM (layout)

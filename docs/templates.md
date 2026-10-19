@@ -10,10 +10,10 @@ El catálogo registra **10 plantillas** en el `override.yaml`
 
 - **6 locales** con `type: file` → `/app/templates/<t>/template.yaml` (servidas
   por el CM desde `assets/templates/`).
-- **4 MLOps** con `type: url` → repos `control-plane`
+- **4 MLOps** con `type: url` → repos `platform-control-plane`
   (`blob/main/backstage-templates/<t>/template.yaml`): `cognitive-safe-llm-service`,
   `llm-canary-eval-pipeline`, `finops-arbitrage-router`, `managed-llm-service`.
-  Su fuente de verdad es el repo `control-plane`, no este CM.
+  Su fuente de verdad es el repo `platform-control-plane`, no este CM.
 
 ```mermaid
 flowchart LR
@@ -31,7 +31,7 @@ flowchart LR
 |---|---|---|---|---|
 | `python-fastapi` | service | Python/FastAPI | `fastapi` app + Docker multi-stage + CI | paso extra `fs:delete` de residuos; puerto 8080 |
 | `go-frontend` | service | Go `net/http` frontend | servidor estático (`public/`) + `/health`; Docker distroless + CI | port 8080 (usa `PORT` si existe) |
-| `crossplane-local-deployment` | service | Crossplane `LocalDeployment` claim | claim + catalog-info | **no crea repo propio**: pushea a `backstage-workloads` |
+| `crossplane-local-deployment` | service | Crossplane `LocalDeployment` claim | claim + catalog-info | **no crea repo propio**: pushea a `idp-backstage-catalog` |
 
 ## Parámetros (comunes a python y go)
 
@@ -50,7 +50,7 @@ flowchart LR
 2. **`limpiar`** (solo python): elimina residuos del skeleton.
 3. **`publish:github`**: crea repo público `gusLopezC-DevOps/<repoName>`,
    `defaultBranch: main`, push inicial.
-4. **`github:actions:dispatch`** sobre `control-plane` (workflow `workflow-alta-pr.yml`):
+4. **`github:actions:dispatch`** sobre `platform-control-plane` (workflow `workflow-alta-pr.yml`):
    `nombre`, `repositorio=https://github.com/gusLopezC-DevOps/<n>.git`,
    `grupo`, `arquetipo=stateless`. → genera AppProject + Application + PR.
 5. **`catalog:register`**: registra
@@ -62,7 +62,7 @@ sequenceDiagram
     participant U as Usuario
     participant S as Backstage Scaffolder
     participant G as GitHub
-    participant CP as control-plane
+    participant CP as platform-control-plane
     participant A as ArgoCD
     U->>S: formulario
     S->>G: fetch:template + publish:github
@@ -107,7 +107,7 @@ skeleton/
 - `crossplane-skeleton/` = `catalog-info.yaml` + `claim.yaml` + `kustomization.yaml`
   (un `LocalDeployment`, labels `backstage.io/kubernetes-id`, hostname `<app>.local`).
 - Paso `gitops:push-to-repo` (custom action del `plugins/custom-actions.cjs.js`)
-  escribe el claim en `backstage-workloads/apps/workloads/<appName>/` y commitea.
+  escribe el claim en `idp-backstage-catalog/apps/workloads/<appName>/` y commitea.
 - `catalog:register` usa `repoContentsUrl` + `catalogInfoPath` (blob) — por eso el
   refresh de **esta** entidad usa la variante `blob`, distinta de la raw de los otros dos.
 

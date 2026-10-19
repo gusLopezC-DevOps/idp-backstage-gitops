@@ -11,7 +11,7 @@ metadata:
     - kong
     - golden-path
   annotations:
-    github.com/project-slug: gusLopezC-DevOps/backstage-entities
+    github.com/project-slug: gusLopezC-DevOps/idp-backstage-gitops
 spec:
   owner: development
   type: service
@@ -45,7 +45,7 @@ spec:
       name: Push to Workloads Repo
       action: gitops:push-to-repo
       input:
-        repoUrl: github.com?owner=gusLopezC-DevOps&repo=backstage-workloads
+        repoUrl: github.com?owner=gusLopezC-DevOps&repo=idp-backstage-catalog
         branch: main
         gitCommitMessage: "Add LocalDeployment claim for ${{ parameters.appName }}"
         subPath: apps/workloads/${{ parameters.appName }}
@@ -57,7 +57,7 @@ spec:
       name: Register Component in Catalog
       action: catalog:register
       input:
-        repoContentsUrl: https://github.com/gusLopezC-DevOps/backstage-workloads/blob/main
+        repoContentsUrl: https://github.com/gusLopezC-DevOps/idp-backstage-catalog/blob/main
         catalogInfoPath: /apps/workloads/${{ parameters.appName }}/catalog-info.yaml
   output:
     links:
