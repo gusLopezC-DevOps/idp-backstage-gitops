@@ -10,7 +10,7 @@ metadata:
 spec:
   project: platform-workloads
   source:
-    repoURL: https://github.com/gusLopezC-DevOps/backstage-gitops.git
+    repoURL: https://github.com/gusLopezC-DevOps/idp-backstage-gitops.git
     targetRevision: main
     path: apps
   destination:

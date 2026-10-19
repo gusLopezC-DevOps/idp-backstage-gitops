@@ -13,15 +13,15 @@ Measured RPO: **last git commit** (catalog entities and TechDocs are rebuilt fro
 ### Repositories
 | Repo | Role | Bootstrap entry |
 |---|---|---|
-| `gusLopezC-DevOps/control-plane.git` | Cluster infrastructure: ArgoCD (helm, self-managed), cert-manager, crossplane, kong, kyverno, monitoring, sealed-secrets — **all as Argo Applications + charts** | `bootstrap/project.yaml` + `bootstrap/root-app.yaml`, then `scripts/install.sh` |
-| `gusLopezC-DevOps/backstage-gitops.git` | Backstage deployment, config, templates, sealed secrets, kyverno policy + dashboard *fuente* | `bootstrap/app-project.yaml` + `bootstrap/root-app.yaml` |
-| `gusLopezC-DevOps/backstage-app.git` | App source + CI (image built externally) | Not needed at recovery (image is pulled) |
+| `gusLopezC-DevOps/platform-control-plane.git` | Cluster infrastructure: ArgoCD (helm, self-managed), cert-manager, crossplane, kong, kyverno, monitoring, sealed-secrets — **all as Argo Applications + charts** | `bootstrap/project.yaml` + `bootstrap/root-app.yaml`, then `scripts/install.sh` |
+| `gusLopezC-DevOps/idp-backstage-gitops.git` | Backstage deployment, config, templates, sealed secrets, kyverno policy + dashboard *fuente* | `bootstrap/app-project.yaml` + `bootstrap/root-app.yaml` |
+| `gusLopezC-DevOps/idp-backstage-app.git` | App source + CI (image built externally) | Not needed at recovery (image is pulled) |
 | `gusLopezC-DevOps/go-frontend-test.git` | Sample service manifests + catalog-info | Synced via Argo app `go-frontend-test` |
 
 ### ArgoCD Applications (all auto-sync, prune, self-heal)
 | App | Source | Project | Namespace |
 |---|---|---|---|
-| `root-app` | control-plane, `overlays/prod` | control-plane | argocd |
+| `root-app` | platform-control-plane, `overlays/prod` | control-plane | argocd |
 | `argocd` | helm chart `argo-cd` 9.5.14 + source `overlays/prod/sources/argocd/values.yaml` | control-plane | argocd |
 | `cert-manager` | helm chart 1.17.1 + source values | cert-manager | cert-manager |
 | `crossplane` | helm chart 1.20.10 + source values | crossplane | crossplane-system |
@@ -30,9 +30,9 @@ Measured RPO: **last git commit** (catalog entities and TechDocs are rebuilt fro
 | `monitoring` | helm chart `kube-prometheus-stack` 85.1.1 + source values | monitoring | monitoring |
 | `sealed-secrets` | vendored chart `overlays/prod/sources/sealed-secrets/chart` | sealed-secrets | sealed-secrets |
 | `go-frontend-test` | go-frontend-test repo, root | go-frontend-test | go-frontend-test |
-| `backstage-gitops` | backstage-gitops repo, `apps` | default | workloads |
+| `backstage-gitops` | idp-backstage-gitops repo, `apps` | default | workloads |
 
-> `bootstrap/platform-workloads.yaml` (backstage-gitops) es un Application **huérfano**: el project `platform-workloads`
+> `bootstrap/platform-workloads.yaml` (idp-backstage-gitops) es un Application **huérfano**: el project `platform-workloads`
 > sí existe pero esa Application no está aplicada. **No usarla.**
 
 ### Lo que NO despliega Argo (se recrea a mano al recuperar)
@@ -51,7 +51,7 @@ These five resources are applied imperatively, by design. They are reproduced in
 - **Self-signed TLS** → Kong serves `CN=localhost`; no external CA dependency. Browser warnings expected.
 
 ### Secrets
-Managed via **SealedSecrets** (encrypted in `backstage-gitops` repo at `apps/backstage/postgres/secret.yaml`):
+Managed via **SealedSecrets** (encrypted in `idp-backstage-gitops` repo at `apps/backstage/postgres/secret.yaml`):
 - `postgres-sealed` (POSTGRES_USER, POSTGRES_PASSWORD)
 
 > **The SealedSecrets private key is NOT recoverable** (no offline backup, by policy). On a **fresh cluster the
@@ -73,8 +73,8 @@ curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
 kubectl wait --for=condition=Ready node/fedora --timeout=60s
 
 # 3. Install ArgoCD with the SAME helm chart Argo uses to self-manage:
-#    chart argo-cd 9.5.14, helm repo argoproj, values from control-plane (config/argo-cd/values.yaml or sources/argocd/values.yaml)
-git clone https://github.com/gusLopezC-DevOps/control-plane.git /tmp/control-plane
+#    chart argo-cd 9.5.14, helm repo argoproj, values from platform-control-plane (config/argo-cd/values.yaml or sources/argocd/values.yaml)
+git clone https://github.com/gusLopezC-DevOps/platform-control-plane.git /tmp/control-plane
 helm repo add argo https://argoproj.github.io/argo-helm
 helm install argocd argo/argo-cd \
   --namespace argocd --create-namespace \
@@ -96,15 +96,15 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.pas
 ### Phase 2 — Bootstrap the two repos (10 min)
 
 ```bash
-# 2.1 infrastructure first (control-plane): AppProject control-plane + root-app -> spawns all infra Apps
+# 2.1 infrastructure first (platform-control-plane): AppProject control-plane + root-app -> spawns all infra Apps
 cd /tmp/control-plane
 kubectl apply -f bootstrap/project.yaml
 kubectl apply -f bootstrap/root-app.yaml
 
-# 2.2 then the workload repo (backstage-gitops): AppProject platform-workloads + app backstage-gitops
+# 2.2 then the workload repo (idp-backstage-gitops): AppProject platform-workloads + app backstage-gitops
 cd /tmp
-git clone https://github.com/gusLopezC-DevOps/backstage-gitops.git
-cd backstage-gitops
+git clone https://github.com/gusLopezC-DevOps/idp-backstage-gitops.git
+cd idp-backstage-gitops
 kubectl apply -f bootstrap/app-project.yaml
 kubectl apply -f bootstrap/root-app.yaml
 
@@ -114,7 +114,7 @@ sleep 120
 ```
 
 Or simply run `bash /tmp/control-plane/scripts/install.sh` for the control-plane half (it applies project + root-app
-and waits for `Synced`). There is **no equivalent script for backstage-gitops**: both `bootstrap/app-project.yaml`
+and waits for `Synced`). There is **no equivalent script for idp-backstage-gitops**: both `bootstrap/app-project.yaml`
 and `bootstrap/root-app.yaml` must be applied by hand.
 
 ### Phase 3 — Verificar planes de datos (5 min)
@@ -256,8 +256,8 @@ curl -sk https://backstage.local/
 
 ```text
 k3s install
-  └── ArgoCD (helm chart 9.5.14, control-plane config/argo-cd/values.yaml)
-       └── control-plane bootstrap: project + root-app
+  └── ArgoCD (helm chart 9.5.14, platform-control-plane config/argo-cd/values.yaml)
+       └── platform-control-plane bootstrap: project + root-app
             ├── argocd (self-managed)
             ├── sealed-secrets
             ├── cert-manager  → clusterissuer (Phase 4.1)
@@ -265,7 +265,7 @@ k3s install
             ├── kong          → ingress argocd/crossplane (Phase 4.2-4.3)
             ├── kyverno       → golden-path policy (Phase 4.5)
             └── monitoring    → grafana dashboard CM (Phase 4.6)
-       └── backstage-gitops bootstrap: app-project + root-app
+       └── idp-backstage-gitops bootstrap: app-project + root-app
             ├── backstage (deployment, service, ingress, certificate, postgres, netpols, templates)
             │    ├── reads postgres-sealed → MUST be re-sealed (Phase 5)
             │    └── connects to PostgreSQL (workloads namespace)

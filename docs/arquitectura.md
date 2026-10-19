@@ -63,13 +63,13 @@ node packages/backend \
 
 El `override.yaml` (que viaja en el CM) es el único merge de configuración que
 gestionamos; los dos `app-config*.yaml` vienen de la imagen. La imagen se construye
-desde el repo [gitops `gusLopezC-DevOps/backstage-app`](https://github.com/gusLopezC-DevOps/backstage-app)
+desde el repo [gitops `gusLopezC-DevOps/idp-backstage-app`](https://github.com/gusLopezC-DevOps/idp-backstage-app)
 (CI `build-push`): es **runtime puro** + python/mkdocs para TechDocs, y hornea solo
 `catalog/entities/{users,groups}.yaml` (montados en `/app/entities`). **No hornea
 templates**: las plantillas del scaffolder (6 locales) y la action custom
 (`gitops:push-to-repo`) viven en el CM y se montan en `/app/templates` y
 `/app/plugins`. Además el `override.yaml` registra en el catálogo 4 plantillas
-MLOps por `type: url` (fuente: repo `control-plane` → `backstage-templates/`).
+MLOps por `type: url` (fuente: repo `platform-control-plane` → `backstage-templates/`).
 
 > **Regla de oro de Backstage (merge)**: un cambio sobre una clave con formato
 > **array reemplaza el array completo** (no lo concatena). Por eso el catálogo se
@@ -83,7 +83,7 @@ MLOps por `type: url` (fuente: repo `control-plane` → `backstage-templates/`).
 | `postgres-sealed` | `POSTGRES_USER`, `POSTGRES_PASSWORD` | env de Backstage para la BD |
 
 - Los secretos viven en el cluster como **SealedSecrets** (policy de
-  `control-plane/docs/gestion-secretos-lite.md`); no se versionan en claro en Git.
+  `platform-control-plane/docs/gestion-secretos-lite.md`); no se versionan en claro en Git.
 - `integrations.github.token: ${GITHUB_TOKEN}` se resuelve del env del pod y permite
   a Backstage leer repos **privados** y hacer `raw.githubusercontent.com`.
 
